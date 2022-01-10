@@ -1,0 +1,11 @@
+{
+    "multipart": [
+        {
+            "apply" : {
+            "model": "makomod:block/stoned"
+        }}, {
+            "when": { "enabled": "true" },
+            "apply": { "model": "makomod:block/stoned_tank_enabled", "uvlock": true }
+        }
+    ]
+}
