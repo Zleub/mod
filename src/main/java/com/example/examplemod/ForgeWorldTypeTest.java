@@ -24,6 +24,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -42,27 +43,44 @@ import net.minecraftforge.registries.ObjectHolder;
 
 import java.util.logging.Logger;
 
+class TestWorldPreset extends ForgeWorldPreset {
+
+    public TestWorldPreset(IChunkGeneratorFactory factory) {
+        super(factory);
+    }
+
+    public TestWorldPreset(IBasicChunkGeneratorFactory factory) {
+        super(factory);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return new TextComponent("TEST");
+    }
+}
+
 @Mod("examplemod")
 public class ForgeWorldTypeTest
 {
     @ObjectHolder("examplemod:test_world_type")
-    public static ForgeWorldPreset testWorldType;
+    public static TestWorldPreset testWorldType;
 
     public ForgeWorldTypeTest()
     {
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(ForgeWorldPreset.class, this::registerWorldTypes);
-        testWorldType.setRegistryName("examplemod:test");
+        //testWorldType.setRegistryName("examplemod:test");
 
-        ExampleMod.LOGGER.info("am i here ?");
     }
 
     private void registerWorldTypes(RegistryEvent.Register<ForgeWorldPreset> event)
     {
+        ExampleMod.LOGGER.info("am i here ?");
+
         event.getRegistry().registerAll(
-                new ForgeWorldPreset(WorldGenSettings::makeDefaultOverworld).setRegistryName("test_world_type")
+                new TestWorldPreset(WorldGenSettings::makeDefaultOverworld).setRegistryName("test_world_type")
         );
         event.getRegistry().registerAll(
-                new ForgeWorldPreset(this::createChunkGenerator).setRegistryName("test_world_type2")
+                new TestWorldPreset(this::createChunkGenerator).setRegistryName("test_world_type2")
         );
     }
 
