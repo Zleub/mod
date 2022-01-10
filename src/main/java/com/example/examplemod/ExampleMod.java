@@ -1,7 +1,23 @@
 package com.example.examplemod;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeGenerationSettings;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.StrongholdFeature;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.material.Material;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,12 +33,18 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.stream.Collectors;
 
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("examplemod")
 public class ExampleMod
 {
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
+    private static final ForgeWorldTypeTest wtt = new ForgeWorldTypeTest();
+
+    static protected CreativeModeTab MAKO;
+    static protected Block OBS_BRICK;
+    static protected Biome BIOME_TEST;
 
     public ExampleMod() {
         // Register the setup method for modloading
@@ -34,6 +56,46 @@ public class ExampleMod
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+//        public static final StructureFeature<NoneFeatureConfiguration> STRONGHOLD = register("Stronghold", new StrongholdFeature(NoneFeatureConfiguration.CODEC), GenerationStep.Decoration.STRONGHOLDS);
+
+        MAKO = new CreativeModeTab("makomod") {
+            @Override
+            public ItemStack makeIcon() {
+                return ItemStack.of(
+                        new CompoundTag().getCompound("examplemod:obs_brick")
+                );
+            }
+        };
+
+        OBS_BRICK = new Block( BlockBehaviour.Properties.of(Material.STONE) );
+
+//        this.BIOME_TEST = new Biome(
+//                Biome.Precipitation.RAIN,
+//                Biome.BiomeCategory.FOREST,
+//                new BiomeSpecialEffects.Builder()
+//                        .grassColorOverride(5570560)
+//                        .waterColor(13107),
+//                new BiomeGenerationSettings.Builder(),
+//                MobSpawnSettings.EMPTY
+//        );
+
+        BIOME_TEST = new Biome.BiomeBuilder()
+                .precipitation( Biome.Precipitation.RAIN )
+                .biomeCategory( Biome.BiomeCategory.FOREST )
+                .specialEffects( new BiomeSpecialEffects.Builder()
+                        .grassColorOverride(5570560)
+                        .waterColor(13107)
+                        .fogColor(13158600)
+                        .waterFogColor(13158600)
+                        .skyColor(13158600)
+                        .build() )
+                .temperature(6)
+                .downfall(6)
+                .generationSettings( BiomeGenerationSettings.EMPTY )
+                .mobSpawnSettings( MobSpawnSettings.EMPTY )
+                .build();
+
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -71,6 +133,20 @@ public class ExampleMod
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
             // register a new block here
             LOGGER.info("HELLO from Register Block");
+            blockRegistryEvent.getRegistry().register(OBS_BRICK.setRegistryName("examplemod:obs_brick"));
+        }
+
+        @SubscribeEvent
+        public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
+            itemRegistryEvent.getRegistry().register(
+                    new BlockItem(OBS_BRICK, new Item.Properties().tab(MAKO)).setRegistryName("examplemod:obs_brick")
+            );
+        }
+
+        @SubscribeEvent
+        public static void onBiomeRegistry(final RegistryEvent.Register<Biome> biomeRegistryEvent) {
+            LOGGER.info("onBiomeRegister");
+            biomeRegistryEvent.getRegistry().register(BIOME_TEST.setRegistryName("examplemod:red_forest"));
         }
     }
 }
