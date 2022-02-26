@@ -1,14 +1,10 @@
 package com.example.examplemod;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
-import net.minecraft.world.level.biome.BiomeSpecialEffects;
-import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -16,11 +12,17 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.StrongholdFeature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -28,10 +30,16 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.stream.Collectors;
+
+import static com.example.examplemod.FluidMako.FLOWING_MAKO;
+import static com.example.examplemod.FluidMako.STILL_MAKO;
+import static net.minecraftforge.registries.ForgeRegistries.BIOMES;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -42,9 +50,11 @@ public class ExampleMod
     public static final Logger LOGGER = LogManager.getLogger();
     private static final ForgeWorldTypeTest wtt = new ForgeWorldTypeTest();
 
-    static protected CreativeModeTab MAKO;
+    static public CreativeModeTab MAKO;
     static protected Block OBS_BRICK;
     static protected Biome BIOME_TEST;
+
+    static protected FluidMako FluidMako = new FluidMako();
 
     public ExampleMod() {
         // Register the setup method for modloading
@@ -70,16 +80,6 @@ public class ExampleMod
 
         OBS_BRICK = new Block( BlockBehaviour.Properties.of(Material.STONE) );
 
-//        this.BIOME_TEST = new Biome(
-//                Biome.Precipitation.RAIN,
-//                Biome.BiomeCategory.FOREST,
-//                new BiomeSpecialEffects.Builder()
-//                        .grassColorOverride(5570560)
-//                        .waterColor(13107),
-//                new BiomeGenerationSettings.Builder(),
-//                MobSpawnSettings.EMPTY
-//        );
-
         BIOME_TEST = new Biome.BiomeBuilder()
                 .precipitation( Biome.Precipitation.RAIN )
                 .biomeCategory( Biome.BiomeCategory.FOREST )
@@ -103,6 +103,9 @@ public class ExampleMod
         // some preinit code
         LOGGER.info("HELLO FROM PREINIT");
         LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+
+        BiomeManager.addBiome(BiomeManager.BiomeType.WARM, new BiomeManager.BiomeEntry(BIOMES.getResourceKey(BIOME_TEST).get(), 100));
+        BiomeDictionary.addTypes(BIOMES.getResourceKey(BIOME_TEST).get(), BiomeDictionary.Type.PLAINS, BiomeDictionary.Type.OVERWORLD);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
@@ -141,12 +144,22 @@ public class ExampleMod
             itemRegistryEvent.getRegistry().register(
                     new BlockItem(OBS_BRICK, new Item.Properties().tab(MAKO)).setRegistryName("examplemod:obs_brick")
             );
+            itemRegistryEvent.getRegistry().register(new FluidMako().getBucket());
+//            itemRegistryEvent.getRegistry().register();
         }
 
         @SubscribeEvent
         public static void onBiomeRegistry(final RegistryEvent.Register<Biome> biomeRegistryEvent) {
             LOGGER.info("onBiomeRegister");
             biomeRegistryEvent.getRegistry().register(BIOME_TEST.setRegistryName("examplemod:red_forest"));
+        }
+
+        @SubscribeEvent
+        public static void onFluidRegistry(final RegistryEvent.Register<Fluid> fluidRegistryEvent) {
+            // register fluids
+            fluidRegistryEvent.getRegistry().register(new ForgeFlowingFluid.Source(FluidMako.properties).setRegistryName(STILL_MAKO.getId()));
+            fluidRegistryEvent.getRegistry().register(new ForgeFlowingFluid.Flowing(FluidMako.properties).setRegistryName(FLOWING_MAKO.getId()));
+
         }
     }
 }
