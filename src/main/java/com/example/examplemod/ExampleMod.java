@@ -7,11 +7,13 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.StrongholdFeature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Material;
@@ -23,6 +25,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -37,8 +40,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.stream.Collectors;
 
-import static com.example.examplemod.FluidMako.FLOWING_MAKO;
-import static com.example.examplemod.FluidMako.STILL_MAKO;
+import static com.example.examplemod.FluidMako.*;
 import static net.minecraftforge.registries.ForgeRegistries.BIOMES;
 
 
@@ -53,8 +55,6 @@ public class ExampleMod
     static public CreativeModeTab MAKO;
     static protected Block OBS_BRICK;
     static protected Biome BIOME_TEST;
-
-    static protected FluidMako FluidMako = new FluidMako();
 
     public ExampleMod() {
         // Register the setup method for modloading
@@ -95,7 +95,6 @@ public class ExampleMod
                 .generationSettings( BiomeGenerationSettings.EMPTY )
                 .mobSpawnSettings( MobSpawnSettings.EMPTY )
                 .build();
-
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -144,22 +143,12 @@ public class ExampleMod
             itemRegistryEvent.getRegistry().register(
                     new BlockItem(OBS_BRICK, new Item.Properties().tab(MAKO)).setRegistryName("examplemod:obs_brick")
             );
-            itemRegistryEvent.getRegistry().register(new FluidMako().getBucket());
-//            itemRegistryEvent.getRegistry().register();
         }
 
         @SubscribeEvent
         public static void onBiomeRegistry(final RegistryEvent.Register<Biome> biomeRegistryEvent) {
             LOGGER.info("onBiomeRegister");
             biomeRegistryEvent.getRegistry().register(BIOME_TEST.setRegistryName("examplemod:red_forest"));
-        }
-
-        @SubscribeEvent
-        public static void onFluidRegistry(final RegistryEvent.Register<Fluid> fluidRegistryEvent) {
-            // register fluids
-            fluidRegistryEvent.getRegistry().register(new ForgeFlowingFluid.Source(FluidMako.properties).setRegistryName(STILL_MAKO.getId()));
-            fluidRegistryEvent.getRegistry().register(new ForgeFlowingFluid.Flowing(FluidMako.properties).setRegistryName(FLOWING_MAKO.getId()));
-
         }
     }
 }
