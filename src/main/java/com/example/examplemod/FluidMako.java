@@ -1,16 +1,17 @@
 package com.example.examplemod;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.*;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -19,9 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.function.Supplier;
-
-import static com.example.examplemod.ExampleMod.*;
+import static com.example.examplemod.ExampleMod.MAKO;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 class FluidMako extends ForgeFlowingFluid {
@@ -41,17 +40,6 @@ class FluidMako extends ForgeFlowingFluid {
     public static final FlowingFluid MAKO_FLOWING = new FluidMako.Flowing();
     public static final Item MAKO_BUCKET = new BucketItem(MAKO_SOURCE, (new Item.Properties()).tab(MAKO));
     public static final LiquidBlock MAKO_LIQUID = new LiquidBlock(MAKO_SOURCE, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
-
-//    public static final FluidAttributes.Builder attributesBuilder = FluidAttributes.builder(
-//            STILL_MAKO.getId(),
-//            FLOWING_MAKO.getId()
-//    ).density(10).viscosity(10);
-
-//    public static final ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(
-//            STILL_MAKO,
-//            FLOWING_MAKO,
-//            attributesBuilder
-//    ).bucket(() -> MAKO_BUCKET).block(() -> MAKO_LIQUID);
 
     protected FluidMako() {
         super( new ForgeFlowingFluid.Properties(
