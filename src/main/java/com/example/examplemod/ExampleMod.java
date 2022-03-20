@@ -1,46 +1,35 @@
 package com.example.examplemod;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.*;
-import net.minecraft.world.level.biome.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeGenerationSettings;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.feature.StrongholdFeature;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Material;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.stream.Collectors;
 
-import static com.example.examplemod.FluidMako.*;
 import static net.minecraftforge.registries.ForgeRegistries.BIOMES;
 
 
@@ -54,6 +43,7 @@ public class ExampleMod
 
     static public CreativeModeTab MAKO;
     static protected Block OBS_BRICK;
+    static protected Block MATRIX;
     static protected Biome BIOME_TEST;
 
     public ExampleMod() {
@@ -79,6 +69,7 @@ public class ExampleMod
         };
 
         OBS_BRICK = new Block( BlockBehaviour.Properties.of(Material.STONE) );
+        MATRIX = new Block( BlockBehaviour.Properties.of(Material.STONE) );
 
         BIOME_TEST = new Biome.BiomeBuilder()
                 .precipitation( Biome.Precipitation.RAIN )
@@ -136,12 +127,16 @@ public class ExampleMod
             // register a new block here
             LOGGER.info("HELLO from Register Block");
             blockRegistryEvent.getRegistry().register(OBS_BRICK.setRegistryName("examplemod:obs_brick"));
+            blockRegistryEvent.getRegistry().register(MATRIX.setRegistryName("examplemod:matrix"));
         }
 
         @SubscribeEvent
         public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
             itemRegistryEvent.getRegistry().register(
                     new BlockItem(OBS_BRICK, new Item.Properties().tab(MAKO)).setRegistryName("examplemod:obs_brick")
+            );
+            itemRegistryEvent.getRegistry().register(
+                    new BlockItem(MATRIX, new Item.Properties().tab(MAKO)).setRegistryName("examplemod:matrix")
             );
         }
 
