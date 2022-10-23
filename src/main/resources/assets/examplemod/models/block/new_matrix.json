@@ -1,0 +1,6 @@
+{
+  "loader": "forge:obj",
+  "model": "examplemod:models/block/matrix2.obj",
+  "flip-v": true,
+  "detectCullableFaces": false
+}

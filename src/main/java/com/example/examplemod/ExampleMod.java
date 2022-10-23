@@ -69,7 +69,7 @@ public class ExampleMod
         };
 
         OBS_BRICK = new Block( BlockBehaviour.Properties.of(Material.STONE) );
-        MATRIX = new Block( BlockBehaviour.Properties.of(Material.STONE) );
+        MATRIX = new MatrixBlock( BlockBehaviour.Properties.of(Material.STONE).noOcclusion().dynamicShape() );
 
         BIOME_TEST = new Biome.BiomeBuilder()
                 .precipitation( Biome.Precipitation.RAIN )
